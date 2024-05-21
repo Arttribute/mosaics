@@ -1,0 +1,63 @@
+/* styles/leaderboards.module.css */
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 1rem;
+  }
+  
+  .heading {
+    text-align: center;
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 2rem;
+  }
+  
+  .topThree {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 2rem;
+  }
+  
+  .rank {
+    text-align: center;
+  }
+  
+  .rank img {
+    border-radius: 50%;
+    width: 80px;
+    height: 80px;
+    object-fit: cover; /* Use object-fit property */
+  }
+  
+  .rank1 .text {
+    color: #ffd700; /* Gold */
+  }
+  
+  .rank2 .text {
+    color: #c0c0c0; /* Silver */
+  }
+  
+  .rank3 .text {
+    color: #cd7f32; /* Bronze */
+  }
+  
+  .table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .table th,
+  .table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+  }
+  
+  .table th {
+    background-color: #f2f2f2;
+    text-align: left;
+  }
+  
+  .textRight {
+    text-align: left;
+  }
+  
