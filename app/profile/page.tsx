@@ -1,6 +1,6 @@
 import React from 'react'
-import ProfileDialog from '@/components/ui/profile/ProfileDialog'
-import ProfileImage from '@/components/ui/profile/ProfileImage'
+import ProfileDialog from '@/components/profile/ProfileDialog'
+import ProfileImage from '@/components/profile/ProfileImage'
 import { Button } from '@/components/ui/button'
 
 const profile = {
