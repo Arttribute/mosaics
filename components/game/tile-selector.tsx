@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import SuccessDialog from "./success-dialog";
 
 interface Props {
   src: string;
@@ -131,7 +132,11 @@ const TileSelector: React.FC<Props> = ({ src, numCols, numRows }) => {
           ))}
         </div>
       </div>
-      {isComplete && <div className="text-center mt-4">Puzzle Complete!</div>}
+      <SuccessDialog
+        open={isComplete}
+        solution={src}
+        onContinue={() => setIsComplete(false)}
+      />
     </div>
   );
 };
