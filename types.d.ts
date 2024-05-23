@@ -7,18 +7,53 @@ interface Team {
 }
 
 interface GameScore {
-  _id: string;
+  id: string;
   player: Player;
-  score_value: number;
+  score: number;
 }
 
 interface TeamScore {
-  _id: string;
+  id: string;
   team: Team;
-  score_value: number;
+  score: number;
 }
 
-interface LeaderBoardProps {
-  singlePlayerScores: GameScore[];
-  multiplayerScores: TeamScore[];
+interface LeaderboardScore {
+  id: number;
+  created_at: string;
+  level: number;
+  score: number;
+  time_taken: number;
+  no_of_moves: number;
+  meeting_id: string;
+}
+
+interface Score {
+  id: number;
+  created_at: string;
+  level: number;
+  score: number;
+  time_taken: number;
+  no_of_moves: number;
+  eth_address: string;
+  esn_username: string;
+  picture: string;
+}
+
+
+interface Participant {
+  displayName: string;
+  walletAddress: string | null;
+}
+
+interface Score {
+  id: number;
+  created_at: string;
+  level: number;
+  score: number;
+  time_taken: number;
+  no_of_moves: number;
+  meeting_id: string;
+  participants: Participant[];
+  picture: string;
 }
