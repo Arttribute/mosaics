@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import SuccessDialog from "./success-dialog";
+import PuzzleTimer from "./puzzle-timer";
 
 interface Props {
   src: string;
@@ -78,6 +79,8 @@ const TileSelector: React.FC<Props> = ({ src, numCols, numRows }) => {
         URL.revokeObjectURL(dataUrl);
       };
     });
+
+    console.log("puzzle pieces", pieces);
   }, [src]);
 
   const handleDragStart = (event: React.DragEvent, id: number) => {
@@ -117,7 +120,7 @@ const TileSelector: React.FC<Props> = ({ src, numCols, numRows }) => {
     <div>
       <div className="w-96 h-96 relative">
         <canvas ref={canvasRef} style={{ display: "none" }} />
-        <div className={`grid grid-cols-${numCols}`}>
+        <div className={`grid grid-cols-3`}>
           {shuffledPieces.map((piece, index) => (
             <img
               key={index}
@@ -127,7 +130,7 @@ const TileSelector: React.FC<Props> = ({ src, numCols, numRows }) => {
               onDragStart={(e) => handleDragStart(e, index)}
               onDrop={handleDrop}
               onDragOver={handleDragOver}
-              className="p-[0.8px] col-span-1 rounded-md cursor-pointer hover:shadow-lg transition duration-200 ease-in-out"
+              className="p-[0.8px] col-span-1 rounded-md cursor-pointer hover:shadow-2xl transition duration-200 ease-in-out"
             />
           ))}
         </div>
