@@ -39,7 +39,7 @@ export default function SuccessDialog({
               className="rounded-lg mt-1"
               onClick={onContinue}
             >
-              Go to next promptle
+              Go to next puzzle
               <ChevronRight size={20} className="ml-0.5 w-4 h-4" />
             </Button>
           </div>
