@@ -1,6 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+
+import * as Ably from "ably";
+import { useChannel } from "ably/react";
 import SuccessDialog from "./success-dialog";
 import PuzzleTimer from "./puzzle-timer";
 
@@ -8,15 +11,27 @@ interface Props {
   src: string;
   numCols: number;
   numRows: number;
+  client: any;
+  channelName: string;
 }
 
-const TileSelector: React.FC<Props> = ({ src, numCols, numRows }) => {
+const TileSelector: React.FC<Props> = ({
+  src,
+  numCols,
+  numRows,
+  client,
+  channelName,
+}) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [pieces, setPieces] = useState<{ id: number; img: string }[]>([]);
-  const [shuffledPieces, setShuffledPieces] = useState<
-    { id: number; img: string }[]
-  >([]);
+  const [shuffledPositions, setShuffledPositions] = useState<number[]>([]);
   const [isComplete, setIsComplete] = useState(false); // State variable for puzzle completion
+
+  const { channel } = useChannel(channelName, (message) => {
+    if (message.name === "puzzle-update") {
+      setShuffledPositions(message.data);
+    }
+  });
 
   useEffect(() => {
     const fetchImage = async (url: string) => {
@@ -45,6 +60,7 @@ const TileSelector: React.FC<Props> = ({ src, numCols, numRows }) => {
         const pieceHeight = Math.floor(image.height / numRows);
 
         const tempPieces: { id: number; img: string }[] = [];
+        const tempPositions: number[] = [];
 
         for (let row = 0; row < numRows; row++) {
           for (let col = 0; col < numCols; col++) {
@@ -64,16 +80,20 @@ const TileSelector: React.FC<Props> = ({ src, numCols, numRows }) => {
               id: row * numCols + col,
               img: pieceCanvas.toDataURL(),
             });
+            tempPositions.push(row * numCols + col);
           }
         }
 
         setPieces(tempPieces);
 
-        for (let i = tempPieces.length - 1; i > 0; i--) {
+        for (let i = tempPositions.length - 1; i > 0; i--) {
           const j = Math.floor(Math.random() * (i + 1));
-          [tempPieces[i], tempPieces[j]] = [tempPieces[j], tempPieces[i]];
+          [tempPositions[i], tempPositions[j]] = [
+            tempPositions[j],
+            tempPositions[i],
+          ];
         }
-        setShuffledPieces(tempPieces);
+        setShuffledPositions(tempPositions);
 
         // Revoke the object URL after use
         URL.revokeObjectURL(dataUrl);
@@ -92,13 +112,16 @@ const TileSelector: React.FC<Props> = ({ src, numCols, numRows }) => {
     const sourceId = parseInt(event.dataTransfer.getData("text/plain"));
     const targetId = parseInt(event.currentTarget.id);
     if (sourceId !== targetId) {
-      const newPieces = [...shuffledPieces];
-      [newPieces[sourceId], newPieces[targetId]] = [
-        newPieces[targetId],
-        newPieces[sourceId],
+      const newPositions = [...shuffledPositions];
+      const sourceIndex = newPositions.indexOf(sourceId);
+      const targetIndex = newPositions.indexOf(targetId);
+      [newPositions[sourceIndex], newPositions[targetIndex]] = [
+        newPositions[targetIndex],
+        newPositions[sourceIndex],
       ];
-      setShuffledPieces(newPieces);
-      checkCompletion(newPieces);
+      setShuffledPositions(newPositions);
+      channel.publish({ name: "puzzle-update", data: newPositions });
+      checkCompletion(newPositions);
     }
   };
 
@@ -106,9 +129,9 @@ const TileSelector: React.FC<Props> = ({ src, numCols, numRows }) => {
     event.preventDefault();
   };
 
-  const checkCompletion = (pieces: { id: number; img: string }[]) => {
-    for (let i = 0; i < pieces.length; i++) {
-      if (pieces[i].id !== i) {
+  const checkCompletion = (positions: number[]) => {
+    for (let i = 0; i < positions.length; i++) {
+      if (positions[i] !== i) {
         setIsComplete(false);
         return;
       }
@@ -121,13 +144,13 @@ const TileSelector: React.FC<Props> = ({ src, numCols, numRows }) => {
       <div className="w-96 h-96 relative">
         <canvas ref={canvasRef} style={{ display: "none" }} />
         <div className={`grid grid-cols-3`}>
-          {shuffledPieces.map((piece, index) => (
+          {shuffledPositions.map((position, index) => (
             <img
               key={index}
-              id={index.toString()}
-              src={piece.img}
+              id={pieces[position].id.toString()}
+              src={pieces[position].img}
               draggable="true"
-              onDragStart={(e) => handleDragStart(e, index)}
+              onDragStart={(e) => handleDragStart(e, pieces[position].id)}
               onDrop={handleDrop}
               onDragOver={handleDragOver}
               className="p-[0.8px] col-span-1 rounded-md cursor-pointer hover:shadow-2xl transition duration-200 ease-in-out"
