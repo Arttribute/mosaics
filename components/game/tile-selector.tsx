@@ -1,37 +1,57 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-
-import * as Ably from "ably";
 import { useChannel } from "ably/react";
 import SuccessDialog from "./success-dialog";
-import PuzzleTimer from "./puzzle-timer";
 
 interface Props {
   src: string;
   numCols: number;
-  numRows: number;
   client: any;
+  score: number;
+  secondsLeft: number;
+  givenTime: number;
+  movesTaken: number;
   channelName: string;
+  setMovesTaken: any;
+  setScore: any;
+  puzzleIsComplete: boolean;
+  setPuzzleIsComplete: any;
+  handleNextPuzzle: () => void;
 }
 
 const TileSelector: React.FC<Props> = ({
   src,
   numCols,
-  numRows,
   client,
+  secondsLeft,
   channelName,
+  score,
+  movesTaken,
+  setMovesTaken,
+  givenTime,
+  setScore,
+  puzzleIsComplete,
+  setPuzzleIsComplete,
+  handleNextPuzzle,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [pieces, setPieces] = useState<{ id: number; img: string }[]>([]);
   const [shuffledPositions, setShuffledPositions] = useState<number[]>([]);
-  const [isComplete, setIsComplete] = useState(false); // State variable for puzzle completion
+
+  const numRows = numCols;
 
   const { channel } = useChannel(channelName, (message) => {
     if (message.name === "puzzle-update") {
       setShuffledPositions(message.data);
     }
   });
+
+  useEffect(() => {
+    if (puzzleIsComplete) {
+      updateScore();
+    }
+  }, [puzzleIsComplete]);
 
   useEffect(() => {
     const fetchImage = async (url: string) => {
@@ -120,7 +140,11 @@ const TileSelector: React.FC<Props> = ({
         newPositions[sourceIndex],
       ];
       setShuffledPositions(newPositions);
-      channel.publish({ name: "puzzle-update", data: newPositions });
+      setMovesTaken((prev: number) => prev + 1);
+      channel.publish({
+        name: "puzzle-update",
+        data: newPositions,
+      });
       checkCompletion(newPositions);
     }
   };
@@ -132,11 +156,24 @@ const TileSelector: React.FC<Props> = ({
   const checkCompletion = (positions: number[]) => {
     for (let i = 0; i < positions.length; i++) {
       if (positions[i] !== i) {
-        setIsComplete(false);
+        setPuzzleIsComplete(false);
         return;
       }
     }
-    setIsComplete(true);
+    setPuzzleIsComplete(true);
+  };
+
+  const updateScore = () => {
+    const baseScore = 100;
+    const timePenalty = 0.1;
+    const movesPenalty = 1;
+    const timeLeft = secondsLeft;
+    if (puzzleIsComplete) {
+      const totalMovesPenalty = movesPenalty * movesTaken;
+      const totalTimePenalty = Math.round(timePenalty * (givenTime - timeLeft));
+      const promptleScore = baseScore - totalMovesPenalty - totalTimePenalty;
+      setScore(score + promptleScore);
+    }
   };
 
   return (
@@ -159,9 +196,9 @@ const TileSelector: React.FC<Props> = ({
         </div>
       </div>
       <SuccessDialog
-        open={isComplete}
+        open={puzzleIsComplete}
         solution={src}
-        onContinue={() => setIsComplete(false)}
+        onContinue={handleNextPuzzle}
       />
     </div>
   );
