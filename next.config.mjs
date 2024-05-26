@@ -12,7 +12,11 @@ const nextConfig = {
       },
       {
         protocol: "https",
-        hostname: "github.com",
+        hostname: "images.unsplash.com",
+      },
+      {
+        protocol: "https",
+        hostname: "studio.arttribute.io",
       },
       {
         protocol: "https",
