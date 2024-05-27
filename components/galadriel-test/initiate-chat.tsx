@@ -10,17 +10,26 @@ import { chatGPTABI } from "@/lib/abi/chatGptABI";
 
 require("dotenv").config()
 
+const NEXT_PUBLIC_ORACLE_ADDRESS="0x4168668812C94a3167FCd41D12014c5498D74d7e"
+const NEXT_PUBLIC_CHATGPT_CONTRACT_ADDRESS="0x6e282F3593511BB144c80299acAc51467FAB6BE3"
+
+
+const NEXT_PUBLIC_RPC_URL="https://devnet.galadriel.com/"
+const NEXT_PUBLIC_WALLET_PRIVATE_KEY="19daf05aeaceeac68736f22cffeb780f59a892c94eba0a5227f465429b086428"
+
+
+
 const CreateChat = () => {
     const [chat, setchat] = useState<number |null>(null)
     const [response, setResponse] = useState<string>("")
 
 
-    const contractAddress = process.env.NEXT_PUBLIC_CHATGPT_CONTRACT_ADDRESS
+    const contractAddress = NEXT_PUBLIC_CHATGPT_CONTRACT_ADDRESS
 
     //Instead of this you should connect it to a web3Modal instead of this hardcoded wallet address
-    const privateKey = process.env.NEXT_PUBLIC_WALLET_PRIVATE_KEY
+    const privateKey = NEXT_PUBLIC_WALLET_PRIVATE_KEY
     console.log("Wallet PK:",privateKey)
-    const rpcUrl = process.env.NEXT_PUBLIC_RPC_URL
+    const rpcUrl = NEXT_PUBLIC_RPC_URL
     console.log("Provider: ", rpcUrl)
 
     
