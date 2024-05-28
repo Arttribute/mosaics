@@ -1,6 +1,5 @@
 const hre = require("hardhat");
-
-require ("dotenv").config()
+require("dotenv").config();
 
 async function main() {
   if (!process.env.ORACLE_ADDRESS) {
@@ -11,17 +10,18 @@ async function main() {
 }
 
 async function deployTest(oracleAddress: string) {
-  const agent = await hre.ethers.deployContract("ChatGpt", [oracleAddress], {});
+  const agent = await hre.ethers.deployContract(
+    "MosaicsGameAgent",
+    [oracleAddress],
+    {}
+  );
 
   await agent.waitForDeployment();
-
-  console.log(
-    `ChatGPT contract deployed to ${agent.target}`
-  );
+  console.log(`MosaicsGameAgent oracle address ${process.env.ORACLE_ADDRESS}`);
+  console.log(`MosaicsGameAgent contract deployed to ${agent.target}`);
+  console.log("MosaicsGameAgent contract address: ", await agent.getAddress());
 }
 
-// We recommend this pattern to be able to use async/await everywhere
-// and properly handle errors.
 main().catch((error) => {
   console.error(error);
   process.exitCode = 1;
