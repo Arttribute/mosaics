@@ -147,10 +147,13 @@ export default function Game({ params }: { params: { slug: string } }) {
       num_images: 1,
       callback: 0,
     };
-    const res = await axios.post("/api/generation", {
-      textToImageObject,
-      modelId,
-    });
+    const res = await axios.post(
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/generation`,
+      {
+        textToImageObject,
+        modelId,
+      }
+    );
     const generationData = await res.data;
     console.log("Generation data:", generationData);
     const generationId = generationData.id.toString();
@@ -159,9 +162,12 @@ export default function Game({ params }: { params: { slug: string } }) {
 
   async function getPuzzleImage(generationId: string, modelId: string) {
     try {
-      const result = await axios.get(`/api/generation/${generationId}`, {
-        params: { model_id: modelId, prompt_id: generationId },
-      });
+      const result = await axios.get(
+        `${process.env.NEXT_PUBLIC_BASE_URL}/api/generation/${generationId}`,
+        {
+          params: { model_id: modelId, prompt_id: generationId },
+        }
+      );
       console.log("Result:", result.data);
       setImagesData(result.data.data.images);
     } catch (error) {
