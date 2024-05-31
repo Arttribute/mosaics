@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@ensdomains/ensjs": "^3.7.0",
     "@hookform/resolvers": "^3.4.0",
     "@openzeppelin/contracts": "^5.0.2",
     "@radix-ui/react-avatar": "^1.0.4",
