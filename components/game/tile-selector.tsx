@@ -3,6 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import { useChannel } from "ably/react";
 import SuccessDialog from "./success-dialog";
+import FailedDialog from "./failed-dialog";
+import { useRouter } from "next/navigation";
 
 interface Props {
   src: string;
@@ -18,6 +20,7 @@ interface Props {
   puzzleIsComplete: boolean;
   setPuzzleIsComplete: any;
   handleNextPuzzle: () => void;
+  failedPuzzle: boolean;
 }
 
 const TileSelector: React.FC<Props> = ({
@@ -34,12 +37,21 @@ const TileSelector: React.FC<Props> = ({
   puzzleIsComplete,
   setPuzzleIsComplete,
   handleNextPuzzle,
+  failedPuzzle,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [pieces, setPieces] = useState<{ id: number; img: string }[]>([]);
   const [shuffledPositions, setShuffledPositions] = useState<number[]>([]);
 
   const numRows = numCols;
+
+  const router = useRouter();
+  const leaveGame = () => {
+    //redirect to home page
+    router.push("/");
+    //publish score
+    //leave channel
+  };
 
   const { channel } = useChannel(channelName, (message) => {
     if (message.name === "puzzle-update") {
@@ -199,6 +211,14 @@ const TileSelector: React.FC<Props> = ({
         open={puzzleIsComplete}
         solution={src}
         onContinue={handleNextPuzzle}
+      />
+
+      <FailedDialog
+        open={failedPuzzle}
+        solution={src}
+        timeRemaining={secondsLeft}
+        movesRemaining={givenTime}
+        onLeaveGame={leaveGame}
       />
     </div>
   );
