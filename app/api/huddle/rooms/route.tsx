@@ -6,7 +6,7 @@ const getRoomId = async () => {
   });
 
   const createNewRoom = await api.createRoom({
-    title: "Huddle01 Room 2",
+    title: "Huddle01 Room 3",
   });
 
   const roomId = createNewRoom?.data;
