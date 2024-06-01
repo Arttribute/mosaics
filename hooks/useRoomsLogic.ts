@@ -4,6 +4,9 @@ import Web3Modal from "web3modal";
 import { useRoom, usePeerIds, useDataMessage } from "@huddle01/react/hooks";
 
 export const useRoomsLogic = (roomId: string) => {
+  const [provider, setProvider] = useState<ethers.BrowserProvider | null>(null);
+  const [address, setAddress] = useState<string | null>(null);
+  const [ensName, setEnsName] = useState<string | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const { sendData } = useDataMessage();
   const [cursorPosition, setCursorPosition] = useState({ top: 0, left: 0 });
@@ -18,6 +21,36 @@ export const useRoomsLogic = (roomId: string) => {
     },
   });
   const { peerIds } = usePeerIds();
+
+  const connectWallet = async () => {
+    try {
+      const web3Modal = new Web3Modal({
+        network: "sepolia",
+        cacheProvider: true,
+        providerOptions: {},
+      });
+      const instance = await web3Modal.connect();
+      const provider = new ethers.BrowserProvider(instance);
+      setProvider(provider);
+
+      const signer = await provider.getSigner();
+      const address = await signer.getAddress();
+      setAddress(address);
+
+      let ensName;
+      try {
+        ensName = await provider.lookupAddress(address);
+        setEnsName(ensName);
+      } catch (error) {
+        console.error("Error fetching ENS name:", error);
+      }
+
+      return ensName || address;
+    } catch (error) {
+      console.error("Error connecting wallet:", error);
+      return null;
+    }
+  };
 
   const getRoomToken = async (displayName: string) => {
     try {
@@ -35,12 +68,10 @@ export const useRoomsLogic = (roomId: string) => {
   };
 
   const handleJoin = async () => {
-    const web3Modal = new Web3Modal();
-    const connection = await web3Modal.connect();
-    const provider = new ethers.BrowserProvider(connection);
-    const signer = await provider.getSigner();
-    const address = await signer.getAddress();
-    await getRoomToken(address);
+    const displayName = await connectWallet();
+    if (displayName) {
+      await getRoomToken(displayName);
+    }
   };
 
   useEffect(() => {
