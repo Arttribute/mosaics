@@ -2,6 +2,7 @@
 import { Menubar, MenubarMenu, MenubarTrigger } from "@/components/ui/menubar";
 
 import { Logo } from "@/components/layout/logo";
+import AccountMenu from "../profile/AccountMenu";
 
 export default function AppBar() {
   return (
@@ -14,7 +15,7 @@ export default function AppBar() {
           </MenubarTrigger>
         </MenubarMenu>
         <div className="grow" />
-        <div className="hidden lg:flex">Account menu here</div>
+        <AccountMenu />
       </Menubar>
     </div>
   );
