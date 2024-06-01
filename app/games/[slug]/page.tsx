@@ -29,7 +29,7 @@ export default function Game({ params }: { params: { slug: string } }) {
   const [puzzleIsComplete, setPuzzleIsComplete] = useState(false);
   const [loadingImage, setLoadingImage] = useState(true);
   const [score, setScore] = useState(0);
-  const client = new Ably.Realtime({ authUrl: "/api" });
+  //const client = new Ably.Realtime({ authUrl: "/api" });
 
   const modelId = "690204";
 
