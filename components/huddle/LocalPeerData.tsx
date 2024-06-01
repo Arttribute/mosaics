@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useRef, useEffect, useState } from "react";
 import {
   useLocalVideo,
@@ -5,7 +7,7 @@ import {
   useLocalPeer,
 } from "@huddle01/react/hooks";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { Mic as MicIcon, MicOff as MicOffIcon } from "lucide-react";
 import { Video as VideoIcon, VideoOff as VideoOffIcon } from "lucide-react";
 
@@ -36,6 +38,16 @@ const LocalPeerData: React.FC = () => {
     isAudioOn ? disableAudio() : enableAudio();
   };
 
+  // Fetch profile picture from local storage
+  const getProfilePicture = () => {
+    const userJson = localStorage.getItem("user");
+    if (userJson) {
+      const user = JSON.parse(userJson);
+      return user.profilePicture || "https://github.com/shadcn.png";
+    }
+    return "https://github.com/shadcn.png";
+  };
+
   return (
     <div>
       <div className="border p-1 rounded-lg border-gray-300">
@@ -47,10 +59,9 @@ const LocalPeerData: React.FC = () => {
               <div className="flex justify-center items-center h-full">
                 <Avatar>
                   <AvatarImage
-                    src="https://github.com/shadcn.png"
-                    alt="@shadcn"
+                    src={getProfilePicture()}
+                    alt="Profile Picture"
                   />
-                  <AvatarFallback>CN</AvatarFallback>
                 </Avatar>
               </div>
             </div>
@@ -64,7 +75,7 @@ const LocalPeerData: React.FC = () => {
         <div className="flex justify-center">
           <Button
             variant="outline"
-            className="w-full mt-0.5 "
+            className="w-full mt-0.5"
             onClick={handleVideo}
           >
             {isVideoOn ? <VideoIcon /> : <VideoOffIcon />}
