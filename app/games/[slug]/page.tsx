@@ -29,7 +29,7 @@ export default function Game({ params }: { params: { slug: string } }) {
   const [puzzleIsComplete, setPuzzleIsComplete] = useState(false);
   const [loadingImage, setLoadingImage] = useState(true);
   const [score, setScore] = useState(0);
-  //const client = new Ably.Realtime({ authUrl: "/api" });
+  const client = new Ably.Realtime({ authUrl: "/api" });
 
   const modelId = "690204";
 
@@ -189,12 +189,7 @@ export default function Game({ params }: { params: { slug: string } }) {
         <ChannelProvider channelName={params.slug}>
           <div>
             <div className="flex flex-col items-center justify-center h-screen">
-              {!gameStarted && (
-                <StartGameDisplay
-                  gameTitle={"test"}
-                  onStartGame={initializeGame}
-                />
-              )}
+              {!gameStarted && <p>Start game</p>}
               {gameStarted && (
                 <>
                   <div className="grid grid-cols-12 gap-2">
@@ -211,21 +206,7 @@ export default function Game({ params }: { params: { slug: string } }) {
                       {imagesData.length === 0 ? (
                         <p>Loading image...</p>
                       ) : (
-                        <TileSelector
-                          src={puzzleImageUrl}
-                          numCols={3}
-                          secondsLeft={secondsLeft}
-                          client={"client"}
-                          channelName={params.slug}
-                          score={score}
-                          givenTime={givenTime}
-                          movesTaken={movesTaken}
-                          setMovesTaken={setMovesTaken}
-                          setScore={setScore}
-                          puzzleIsComplete={puzzleIsComplete}
-                          setPuzzleIsComplete={setPuzzleIsComplete}
-                          handleNextPuzzle={handleNextPuzzle}
-                        />
+                        <p>TileSelector</p>
                       )}
                     </div>
                     <div className="col-span-2 mt-4">
