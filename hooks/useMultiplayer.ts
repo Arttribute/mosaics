@@ -39,7 +39,6 @@ export const useMultiplayer = (channelName: string) => {
 
   const startGame = () => {
     initializeGame();
-    setGameStarted(true);
     console.log("game starting in sockets");
     //channel.publish({ name: "game-start", data: {} });
   };
@@ -49,28 +48,28 @@ export const useMultiplayer = (channelName: string) => {
     channel.publish({ name: "next-puzzle", data: {} });
   };
 
-  useEffect(() => {
-    if (gameStarted) {
-      channel.publish({
-        name: "game-update",
-        data: {
-          movesTaken,
-          score,
-          puzzleIsComplete,
-          secondsLeft,
-          isTimerActive,
-          gameStarted,
-        },
-      });
-    }
-  }, [
-    gameStarted,
-    movesTaken,
-    score,
-    puzzleIsComplete,
-    secondsLeft,
-    isTimerActive,
-  ]);
+  // useEffect(() => {
+  //   if (gameStarted) {
+  //     channel.publish({
+  //       name: "game-update",
+  //       data: {
+  //         movesTaken,
+  //         score,
+  //         puzzleIsComplete,
+  //         secondsLeft,
+  //         isTimerActive,
+  //         gameStarted,
+  //       },
+  //     });
+  //   }
+  // }, [
+  //   gameStarted,
+  //   movesTaken,
+  //   score,
+  //   puzzleIsComplete,
+  //   secondsLeft,
+  //   isTimerActive,
+  // ]);
 
   return { startGame, nextPuzzle };
 };
