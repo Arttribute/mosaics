@@ -27,17 +27,15 @@ export default function Home() {
                 The AI art puzzle game
               </h2>
               <p className="mt-2 text-base text-gray-500 ">
-                Create and compete in unique AI Art challenges where you guess
-                the prompt
-                <br /> that generated an image for a spot on an onchain
-                leaderboard
+                Solve AI generated puzzles, compete on the global leaderboard
+                and earn NFTs
               </p>
               <div className="mt-6">
                 <Link href="/games">
                   <Button className="px-12">Start Playing</Button>
                 </Link>
               </div>
-              <div className="mt-10 p-16">
+              <div className="mt-4 p-16">
                 <ModesDisplay />
               </div>
             </div>

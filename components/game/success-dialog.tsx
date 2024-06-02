@@ -4,6 +4,7 @@ import Image from "next/image";
 
 import { Button } from "@/components/ui/button";
 import { ChevronRight } from "lucide-react";
+import { Loader2 } from "lucide-react";
 
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 
@@ -24,6 +25,13 @@ export default function SuccessDialog({
   onContinue: () => void;
   onLeaveGame: () => void;
 }) {
+  const [loadingLeave, setLoadingLeave] = React.useState(false);
+
+  const handleLeavegame = async () => {
+    setLoadingLeave(true);
+    await onLeaveGame();
+    setLoadingLeave(false);
+  };
   return (
     <Dialog open={open}>
       <DialogContent className="w-96">
@@ -53,11 +61,12 @@ export default function SuccessDialog({
               </Button>
               <Button
                 className="rounded-lg mt-1 border-gray-500 w-full"
-                onClick={onLeaveGame}
+                onClick={handleLeavegame}
               >
                 {mode === "earn"
                   ? "Claim reward and NFT"
                   : "Claim NFT and End game"}
+                {loadingLeave && <Loader2 size={20} className="animate-spin" />}
               </Button>
             </div>
           </div>

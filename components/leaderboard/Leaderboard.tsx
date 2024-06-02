@@ -110,74 +110,80 @@ const Leaderboard: React.FC = () => {
 
   return (
     <div
-      className={`border rounded-lg p-6 bg-white shadow-lg ${styles.container}`}
+      className={`border rounded-xl  bg-white shadow-lg ${styles.container}`}
     >
-      <h1 className={styles.heading}>Leaderboard</h1>
-      <div className="mb-4">
-        <label htmlFor="sort" className="mr-2">
-          Sort by:
-        </label>
-        <select
-          id="sort"
-          value={sortOption}
-          onChange={handleSortChange}
-          className="p-2 border rounded"
-        >
-          <option value="score">Score</option>
-          <option value="time_taken">Time Taken</option>
-          <option value="no_of_moves">Number of Moves</option>
-        </select>
-      </div>
-      <div className={styles.topThree}>
-        {topThree.map((score, index) => renderTopThree(score, index))}
-      </div>
-      <Table className={styles.table}>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Ranking</TableHead>
-            <TableHead>Player</TableHead>
-            <TableHead>Score</TableHead>
-            <TableHead>Time Taken</TableHead>
-            <TableHead>No of Moves</TableHead>
-            <TableHead>Multiplier</TableHead>
-            <TableHead>Stake Amount</TableHead>
-            <TableHead>Puzzle Complete</TableHead>
-            <TableHead>Failed Puzzle</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {rest.map((score, index) => (
-            <TableRow
-              key={score.id}
-              className={
-                score.eth_address === ethAddress ? styles.highlight : ""
-              }
-            >
-              <TableCell>{index + 4}</TableCell>
-              <TableCell>
-                <div className={styles.playerCell}>
-                  <Image
-                    src={score.picture}
-                    alt="player picture"
-                    width={38}
-                    height={38}
-                    className="rounded-full object-cover transition-all aspect-[1]"
-                  />
-                  <span>{score.ens_username}</span>
-                  <div className={styles.tooltip}>{score.eth_address}</div>
-                </div>
-              </TableCell>
-              <TableCell>{score.score} pts</TableCell>
-              <TableCell>{score.time_taken} seconds</TableCell>
-              <TableCell>{score.no_of_moves} moves</TableCell>
-              <TableCell>{score.multiplier ?? "N/A"}</TableCell>
-              <TableCell>{score.stake_amount ?? "N/A"}</TableCell>
-              <TableCell>{score.puzzle_is_complete ? "Yes" : "No"}</TableCell>
-              <TableCell>{score.failed_puzzle ? "Yes" : "No"}</TableCell>
+      <div className="p-8">
+        <h1 className={styles.heading}>Leaderboard</h1>
+
+        <div className={styles.topThree}>
+          {topThree.map((score, index) => renderTopThree(score, index))}
+        </div>
+        <div className="mb-4 text-sm">
+          <label htmlFor="sort" className="mr-2 text-sm font-semibold">
+            Sort by
+          </label>
+          <select
+            id="sort"
+            value={sortOption}
+            onChange={handleSortChange}
+            className="p-1 border rounded"
+          >
+            <option value="score">Score</option>
+            <option value="time_taken">Time Taken</option>
+            <option value="no_of_moves">Number of Moves</option>
+          </select>
+        </div>
+
+        <Table className={styles.table}>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Ranking</TableHead>
+              <TableHead>Player</TableHead>
+              <TableHead>Score</TableHead>
+              <TableHead>Time Taken</TableHead>
+              <TableHead>No of Moves</TableHead>
+              <TableHead>Multiplier</TableHead>
+              <TableHead>Stake Amount</TableHead>
+              <TableHead>Puzzle Complete</TableHead>
+              <TableHead>Failed Puzzle</TableHead>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+          </TableHeader>
+          <TableBody>
+            {rest.map((score, index) => (
+              <TableRow
+                key={score.id}
+                className={
+                  score.eth_address === ethAddress ? styles.highlight : ""
+                }
+              >
+                <TableCell>{index + 4}</TableCell>
+                <TableCell>
+                  <div className={styles.playerCell}>
+                    <Image
+                      src={score.picture}
+                      alt="player picture"
+                      width={38}
+                      height={38}
+                      className="rounded-full object-cover transition-all aspect-[1]"
+                    />
+                    <p className="overflow-hidden text-ellipsis whitespace-nowrap">
+                      {score.ens_username}
+                    </p>
+                    <div className={styles.tooltip}>{score.eth_address}</div>
+                  </div>
+                </TableCell>
+                <TableCell>{score.score} pts</TableCell>
+                <TableCell>{score.time_taken} seconds</TableCell>
+                <TableCell>{score.no_of_moves} moves</TableCell>
+                <TableCell>{score.multiplier ?? "N/A"}</TableCell>
+                <TableCell>{score.stake_amount ?? "N/A"}</TableCell>
+                <TableCell>{score.puzzle_is_complete ? "Yes" : "No"}</TableCell>
+                <TableCell>{score.failed_puzzle ? "Yes" : "No"}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
     </div>
   );
 };
