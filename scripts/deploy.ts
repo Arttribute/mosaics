@@ -6,7 +6,9 @@ async function main() {
     throw new Error("ORACLE_ADDRESS env variable is not set.");
   }
   const oracleAddress: string = process.env.GALADRIEL_ORACLE_ADDRESS;
-  await deployGameAgent(oracleAddress);
+  //await deployGameAgent(oracleAddress);
+  await deployNFTContract();
+  await deployStakingContract();
 }
 
 async function deployGameAgent(oracleAddress: string) {
@@ -17,6 +19,18 @@ async function deployGameAgent(oracleAddress: string) {
   );
   await agent.waitForDeployment();
   console.log(`MosaicsGameAgent contract deployed to ${agent.target}`);
+}
+
+async function deployNFTContract() {
+  const mosaicsNFT = await hre.ethers.deployContract("MosaicsNFTReward");
+  await mosaicsNFT.waitForDeployment();
+  console.log(`MosaicsNFTReward contract deployed to ${mosaicsNFT.target}`);
+}
+
+async function deployStakingContract() {
+  const playToEarn = await hre.ethers.deployContract("PlayToEarn");
+  await playToEarn.waitForDeployment();
+  console.log(`PlayToEarn contract deployed to ${playToEarn.target}`);
 }
 
 main().catch((error) => {
