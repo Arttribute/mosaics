@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 const API_KEY = process.env.ASTRIA_API_KEY;
 
+export const revalidate = 0;
 export async function POST(request: Request) {
   const { textToImageObject, modelId } = await request.json();
 
