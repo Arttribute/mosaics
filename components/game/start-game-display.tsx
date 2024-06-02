@@ -3,7 +3,7 @@ import * as React from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Puzzle } from "lucide-react";
-import { Loader2 } from "lucide-react";
+import { LayoutGrid, Loader2 } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
 import { Play as PlayIcon } from "lucide-react";
@@ -78,10 +78,10 @@ export default function StartGameDisplay({
   return (
     <>
       <div className="flex">
-        <div className="text-lg font-bold  bg-gradient-to-r from-pink-500 to-purple-500 bg-clip-text text-transparent">
-          Mosaics
+        <div className="text-2xl font-bold  bg-gradient-to-r from-pink-500 to-indigo-500 bg-clip-text text-transparent">
+          mosaics
         </div>
-        <Puzzle className="w-3.5 h-3.5 text-purple-500 text-xs mt-0.5 font-bold" />
+        <LayoutGrid className="w-3.5 h-3.5 text-indigo-500 text-xs mt-0.5 font-bold" />
       </div>
       <div className=" border py-12 px-8 m-2  rounded-xl w-96 h-96">
         <div className=" flex flex-col items-center justify-center ">
