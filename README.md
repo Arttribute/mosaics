@@ -33,7 +33,64 @@ Mosaics is built using a combination of technologies and frameworks to deliver a
 **MosaicNFTReward Address:** 0xbA9061540Bb7f9fEF0550430A8D86F11ad9f1dF6
 **PlayToEarn Address:** 0x3D7c9d3CF4502acD2951EBD185fC7124C1465226
 
-## Try out the deplyed Version
+## Deep Dive into the Game Mechanics
+
+#### Puzzle Generation
+
+Puzzle generation in Mosaics involves creating unique, AI-driven challenges tailored to the player's performance. The process is dynamic and adapts based on player performance, ensuring a consistently engaging experience.
+
+**1. Prompt Generation:** The AI game agent, Galadriel, generates a text prompt describing the image for the puzzle. This prompt can vary in complexity based on the player's previous performance.
+**2. Image Creation:** Using the Astria Stability Diffusion API, the text prompt is converted into a high-quality image.
+**3. Tile Splitting:** The generated image is split into smaller, shuffled tiles that the player must rearrange to form the original image.
+**4. Next Puzzle Generation:** Based on the player's final score, game agent generates the next puzzle's prompt, difficulty, number of moves, and time given.
+
++--------------------+ +-------------------------+
+| | | |
+| Galadriel +------------> Astria’s Stability |
+| | Prompt | Diffusion API |
+| (Game Agent) | | (Generate Image) |
+| | | |
++--------------------+ +----------+--------------+
+^ |
+| | Image
+| v
+| +--------------------------+
+| | |
+| | Image Split into Tiles |
+| | |
+| +-----------+--------------+
+| |
+| | Shuffled Tiles
+| v
+| +--------------------------+
+| | |
+| | Player Solves Puzzle |
+| | |
+| +--------------------------+
+| |
+| |
++\_ \_ \_ \_ \_ \_ \_ \_ \_ \_ \_ \_ \_ \_ \_ \_+
+Performance Feedback
+
+#### Game Scoring
+
+Scoring in Mosaics is designed to reward efficiency and skill. Players earn points based on their performance in solving the puzzles, with deductions for taking too long or using too many moves.
+
+**Base Score:** Each puzzle starts with a base score.
+**Time Penalty:** Points are deducted based on the time taken to complete the puzzle. The faster the player completes the puzzle, the fewer points are deducted.
+**Move Penalty:** Points are also deducted for each move taken. Fewer moves result in a higher score.
+**Completion Bonus:** Completing the puzzle within the given constraints awards a bonus to the player's score.
+
+#### Staking and NFT Rewards
+
+In the Play to Earn mode, players can stake tokens to participate in puzzle challenges. This mode introduces a risk-reward element where players earn rewards based on their puzzle-solving performance.
+
+**Staking Tokens:** Players stake a certain amount of tokens to enter the puzzle challenge.
+**Performance-Based Rewards:** Rewards are distributed based on how well the player performs. Better performance yields higher rewards.
+**Partial Loss:** If the player fails to complete the puzzle, they incur a partial loss of their staked tokens.
+**NFT Minting:** Successfully completing puzzles allows players to mint the completed image as an NFT, adding a collectible aspect to the game.
+
+## Try out the deployed Version
 
 You can try out the Mosaics live demo at [mosaics.arttribute.io](https://mosaics.arttribute.io)
 
