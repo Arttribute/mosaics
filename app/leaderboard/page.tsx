@@ -1,9 +1,13 @@
-import Leaderboard from "@/components/leaderboard/Leaderboard";
+import AppBar from "@/components/layout/AppBar";
+import SinglePlayerLeaderboard from "@/components/leaderboard/SinglePlayerLeaderboard";
 
-export default function Page() {
+export default function SinglePlayerLeaderboardPage() {
   return (
-    <div className="container mx-auto p-4">
-      <Leaderboard />
-    </div>
+    <>
+      <AppBar />
+      <div className="container mx-auto p-4 mt-16">
+        <SinglePlayerLeaderboard />
+      </div>
+    </>
   );
 }

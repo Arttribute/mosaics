@@ -8,6 +8,7 @@ import { ethers } from "ethers";
 import Web3Modal from "web3modal";
 import { MosaicsNFTRewardABI } from "@/lib/abi/MosaicsNFTRewardABI";
 import { playToEarnABI } from "@/lib/abi/PlayToEarnABI";
+import { createClient } from "@/utils/supabase/client"; // Import Supabase client
 
 interface Props {
   src: string;
@@ -55,10 +56,11 @@ const TileSelector: React.FC<Props> = ({
   const [shuffledPositions, setShuffledPositions] = useState<number[]>([]);
   const numRows = numCols;
   const router = useRouter();
+  const supabase = createClient();
 
   const nextPuzzle = () => {
     handleNextPuzzle();
-    if (mode === "earn") {
+    if (mode === "earn" && setMultiplier) {
       setMultiplier((multiplier ?? 0) + 0.01);
     }
   };
@@ -96,7 +98,50 @@ const TileSelector: React.FC<Props> = ({
       await mosaicsNFTRewardContract.mint(address, tokenUri);
     }
 
-    router.push("/");
+    // Check if the user already has an entry in the leaderboard
+    const { data, error } = await supabase
+      .from("single_player_leaderboard")
+      .select("*")
+      .eq("eth_address", address)
+      .single();
+
+    if (error && error.code !== "PGRST116") {
+      console.error("Error checking existing entry:", error);
+      return;
+    }
+
+    if (data) {
+      // Update the existing entry
+      await supabase
+        .from("single_playerleaderboard")
+        .update({
+          score,
+          time_taken: givenTime - secondsLeft,
+          no_of_moves: movesTaken,
+          multiplier,
+          stake_amount: stakeAmount,
+          puzzle_is_complete: puzzleIsComplete,
+          failed_puzzle: failedPuzzle,
+        })
+        .eq("eth_address", address);
+    } else {
+      // Insert a new entry
+      await supabase.from("single_player_leaderboard").insert([
+        {
+          eth_address: address,
+          score,
+          time_taken: givenTime - secondsLeft,
+          no_of_moves: movesTaken,
+          multiplier,
+          stake_amount: stakeAmount,
+          puzzle_is_complete: puzzleIsComplete,
+          failed_puzzle: failedPuzzle,
+        },
+      ]);
+    }
+
+    // Navigate to the new leaderboard route with the user's Ethereum address
+    router.push(`/leaderboard?eth_address=${address}`);
   };
 
   let channel: any;
@@ -114,7 +159,7 @@ const TileSelector: React.FC<Props> = ({
       return URL.createObjectURL(blob);
     };
 
-    fetchImage(src).then((dataUrl) => {
+    const processImage = (dataUrl: string) => {
       const image = new Image();
       image.src = dataUrl;
 
@@ -170,7 +215,9 @@ const TileSelector: React.FC<Props> = ({
 
         URL.revokeObjectURL(dataUrl);
       };
-    });
+    };
+
+    fetchImage(src).then(processImage);
 
     console.log("puzzle pieces", pieces);
   }, [src]);
@@ -211,16 +258,16 @@ const TileSelector: React.FC<Props> = ({
     setPuzzleIsComplete(true);
   };
 
-  const updateScore = (movesTaken?: number, score?: number) => {
+  const updateScore = () => {
     const baseScore = 100;
     const timePenalty = 0.1;
     const movesPenalty = 1;
     const timeLeft = secondsLeft;
     if (puzzleIsComplete) {
-      const totalMovesPenalty = movesPenalty * (movesTaken || 0);
+      const totalMovesPenalty = movesPenalty * movesTaken;
       const totalTimePenalty = Math.round(timePenalty * (givenTime - timeLeft));
       const promptleScore = baseScore - totalMovesPenalty - totalTimePenalty;
-      setScore((score || 0) + promptleScore);
+      setScore(score + promptleScore);
     }
   };
 
@@ -228,7 +275,7 @@ const TileSelector: React.FC<Props> = ({
     <div>
       <div className="w-96 h-96 relative">
         <canvas ref={canvasRef} style={{ display: "none" }} />
-        <div className={`grid grid-cols-3`}>
+        <div className={`grid grid-cols-${numCols}`}>
           {shuffledPositions.map((position, index) => (
             <img
               key={index}

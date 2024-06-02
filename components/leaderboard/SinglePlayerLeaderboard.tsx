@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
 import Image from "next/image";
 import styles from "./styles/leaderboard.module.css";
@@ -17,6 +18,8 @@ const SinglePlayerLeaderboard: React.FC = () => {
   const supabase = createClient();
   const [scores, setScores] = useState<Score[]>([]);
   const [sortOption, setSortOption] = useState<string>("score");
+  const searchParams = useSearchParams();
+  const ethAddress = searchParams.get("eth_address");
 
   const getRandomPicture = () => {
     const pictures = [
@@ -38,12 +41,15 @@ const SinglePlayerLeaderboard: React.FC = () => {
           `
           id,
           created_at,
-          level,
           score,
           time_taken,
           no_of_moves,
           eth_address,
-          users (esn_username)
+          users (ens_username),
+          multiplier,
+          stake_amount,
+          puzzle_is_complete,
+          failed_puzzle
         `
         )
         .order(sortOption, {
@@ -54,7 +60,7 @@ const SinglePlayerLeaderboard: React.FC = () => {
       else {
         const formattedData = data.map((item: any) => ({
           ...item,
-          esn_username: item.users.esn_username,
+          ens_username: item.users.ens_username,
           picture: getRandomPicture(),
         }));
         setScores(formattedData as Score[]);
@@ -63,19 +69,6 @@ const SinglePlayerLeaderboard: React.FC = () => {
 
     fetchData();
   }, [sortOption]);
-
-  const levelMapper = (level: number) => {
-    switch (level) {
-      case 1:
-        return "Easy";
-      case 2:
-        return "Medium";
-      case 3:
-        return "Hard";
-      default:
-        return "Unknown";
-    }
-  };
 
   const handleSortChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSortOption(event.target.value);
@@ -104,7 +97,7 @@ const SinglePlayerLeaderboard: React.FC = () => {
           className="rounded-full object-cover transition-all"
         />
         <div className={`text-xl font-semibold ${styles.text}`}>
-          {`${medal} #${index + 1} ${score.esn_username}`}
+          {`${medal} #${index + 1} ${score.ens_username}`}
         </div>
         <div className="text-lg">{value}</div>
         <div className={styles.tooltip}>{score.eth_address}</div>
@@ -119,7 +112,7 @@ const SinglePlayerLeaderboard: React.FC = () => {
     <div
       className={`border rounded-lg p-6 bg-white shadow-lg ${styles.container}`}
     >
-      <h1 className={styles.heading}>Single Player Leaderboard</h1>
+      <h1 className={styles.heading}>Leaderboard</h1>
       <div className="mb-4">
         <label htmlFor="sort" className="mr-2">
           Sort by:
@@ -143,15 +136,23 @@ const SinglePlayerLeaderboard: React.FC = () => {
           <TableRow>
             <TableHead>Ranking</TableHead>
             <TableHead>Player</TableHead>
-            <TableHead>Level</TableHead>
             <TableHead>Score</TableHead>
             <TableHead>Time Taken</TableHead>
             <TableHead>No of Moves</TableHead>
+            <TableHead>Multiplier</TableHead>
+            <TableHead>Stake Amount</TableHead>
+            <TableHead>Puzzle Complete</TableHead>
+            <TableHead>Failed Puzzle</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {rest.map((score, index) => (
-            <TableRow key={score.id}>
+            <TableRow
+              key={score.id}
+              className={
+                score.eth_address === ethAddress ? styles.highlight : ""
+              }
+            >
               <TableCell>{index + 4}</TableCell>
               <TableCell>
                 <div className={styles.playerCell}>
@@ -162,14 +163,17 @@ const SinglePlayerLeaderboard: React.FC = () => {
                     height={38}
                     className="rounded-full object-cover transition-all aspect-[1]"
                   />
-                  <span>{score.esn_username}</span>
+                  <span>{score.ens_username}</span>
                   <div className={styles.tooltip}>{score.eth_address}</div>
                 </div>
               </TableCell>
-              <TableCell>{levelMapper(score.level)}</TableCell>
-              <TableCell>{score.score} %</TableCell>
+              <TableCell>{score.score} pts</TableCell>
               <TableCell>{score.time_taken} seconds</TableCell>
               <TableCell>{score.no_of_moves} moves</TableCell>
+              <TableCell>{score.multiplier ?? "N/A"}</TableCell>
+              <TableCell>{score.stake_amount ?? "N/A"}</TableCell>
+              <TableCell>{score.puzzle_is_complete ? "Yes" : "No"}</TableCell>
+              <TableCell>{score.failed_puzzle ? "Yes" : "No"}</TableCell>
             </TableRow>
           ))}
         </TableBody>
