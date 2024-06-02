@@ -12,23 +12,23 @@ Behind the scenes, Mosaics utilizes a range of technologies to power its gamepla
 
 ## How it's Made
 
-Mosaics is built using a combination of technologies and frameworks to deliver a seamless gaming experience. Next.js serves as the front-end frameworks and Supabase as the database for off-chain information . The AI-generated images are created using Astria’s Stability Diffusion API, which allows for high-quality, customizable images based on textual prompts.
+Mosaics is built using a combination of technologies and frameworks to deliver a seamless gaming experience. Next.js serves as the front-end frameworks and Supabase as the database for off-chain information . The AI-generated images are created using Astria’s Stability Diffusion API, which allows for high-quality, customizable images based on textual prompts while Ably facilitates web socket connection for multiplayer capabilities.
 
-_Galadriel:_ The game agent, powered by Galadriel, generates text prompts used to create puzzle images. Analyzing the player's performance on previous puzzles, Galadriel tailors the difficulty level of each challenge, ensuring a personalized gaming experience.
+**Galadriel:** The game agent, powered by Galadriel, generates text prompts used to create puzzle images. Analyzing the player's performance on previous puzzles, Galadriel tailors the difficulty level of each challenge, ensuring a personalized gaming experience.
 
-_ENS:_ Mosaics integrates ENS for user identification, simplifying the identification process by replacing complex Ethereum addresses with human-readable names. This enhances user accessibility and improves overall engagement with the game.
+**ENS:** Mosaics integrates ENS for user identification, simplifying the identification process by replacing complex Ethereum addresses with human-readable names. This enhances user accessibility and improves overall engagement with the game.
 
-_Huddle SDK:_ Mosaics incorporates the Huddle SDK for its multiplayer functionalities, allowing real-time communication and collaboration among players. By integrating Huddle SDK, Mosaics enables players to engage in collaborative puzzle-solving sessions and share cursor position data seamlessly. This enhances the social aspect of the game and provides a cohesive multiplayer experience for participants.
+**Huddle SDK:** Mosaics incorporates the Huddle SDK for its multiplayer functionalities, allowing real-time communication and collaboration among players. By integrating Huddle SDK, Mosaics enables players to engage in collaborative puzzle-solving sessions and share cursor position data seamlessly. This enhances the social aspect of the game and provides a cohesive multiplayer experience for participants.
 
-_Filecoin:_ Smart contracts deployed on the Filecoin Calibration testnet manage critical aspects of Mosaics' economy, including NFT minting and staking mechanisms. By leveraging Filecoin Calibration, Mosaics ensures the security and transparency of transactions related to NFTs and staking rewards.
+**Filecoin:** Smart contracts deployed on the Filecoin Calibration testnet manage critical aspects of Mosaics' economy, including NFT minting and staking mechanisms. By leveraging Filecoin Calibration, Mosaics ensures the security and transparency of transactions related to NFTs and staking rewards.
 
 ### Contracts Addresses
 
 #### On Galadriel Devnet:
 
-_MosaicsGameAgent Address:_ 0xce61bbBF8f2873FDd4D6b92adbC4895BbEE87D54
+**MosaicsGameAgent Address:** 0xce61bbBF8f2873FDd4D6b92adbC4895BbEE87D54
 
 #### On Filecoin Calibration Testnet:
 
-_MosaicNFTReward Address:_ 0xbA9061540Bb7f9fEF0550430A8D86F11ad9f1dF6
-_PlayToEarn Address:_ 0x3D7c9d3CF4502acD2951EBD185fC7124C1465226
+**MosaicNFTReward Address:** 0xbA9061540Bb7f9fEF0550430A8D86F11ad9f1dF6
+**PlayToEarn Address:** 0x3D7c9d3CF4502acD2951EBD185fC7124C1465226
