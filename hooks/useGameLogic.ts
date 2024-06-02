@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { set } from "zod";
 
 export const useGameLogic = () => {
   const [gameStarted, setGameStarted] = useState(false);
@@ -44,7 +45,30 @@ export const useGameLogic = () => {
         getPuzzleImage(generationId, "690204");
       }, 500);
     }
+    console.log("awaiting image data...");
   }, [generationId, imagesData]);
+
+  // Fetch image data again if the imagesData state changes
+  useEffect(() => {
+    const fetchData = async () => {
+      if (imagesData.length > 0) {
+        await fetchImageUrl();
+      }
+    };
+    console.log("fetching image again and again data...");
+    fetchData();
+  }, [imagesData]);
+
+  useEffect(() => {
+    if (gameAgentMessages && Object.keys(gameAgentMessages).length === 1) {
+      getGameData(gameSession!);
+    }
+    if (gameAgentMessages && Object.keys(gameAgentMessages).length > 1) {
+      updateGameData(gameAgentMessages);
+      console.log("Game ought to be started now...");
+      setGameStarted(true);
+    }
+  }, [gameAgentMessages]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -110,22 +134,15 @@ export const useGameLogic = () => {
         params: { game_session_id: sessionId },
       });
       const gameData = res.data.gameData;
+      console.log("getting game data...");
+      console.log("game data:", gameData);
+      setGameAgentMessages(gameData.messages);
       setLoadingPrompt(false);
       return gameData;
     } catch (error) {
       console.error(error);
     }
   };
-
-  useEffect(() => {
-    if (gameAgentMessages && Object.keys(gameAgentMessages).length === 1) {
-      getGameData(gameSession!);
-    }
-    if (gameAgentMessages && Object.keys(gameAgentMessages).length > 1) {
-      updateGameData(gameAgentMessages);
-      setGameStarted(true);
-    }
-  }, [gameAgentMessages]);
 
   const updateGameData = (messages: any) => {
     const keys = Object.keys(messages)
@@ -157,6 +174,7 @@ export const useGameLogic = () => {
         textToImageObject,
         modelId: "690204",
       });
+      console.log("initiating image generation...");
       const generationData = await res.data;
       const generationId = generationData.id.toString();
       setGenerationId(generationId);
@@ -170,6 +188,7 @@ export const useGameLogic = () => {
       const result = await axios.get(`/api/generation/${generationId}`, {
         params: { model_id: modelId, prompt_id: generationId },
       });
+      console.log("getting image data...");
       setImagesData(result.data.data.images);
     } catch (error) {
       console.error(error);
@@ -184,6 +203,7 @@ export const useGameLogic = () => {
       "https://api.cloudinary.com/v1_1/arttribute/upload",
       data
     );
+    console.log("image uploaded");
     const puzzleImage = res.data.secure_url;
     setPuzzleImageUrl(puzzleImage);
     setLoadingImage(false);
@@ -205,6 +225,10 @@ export const useGameLogic = () => {
     isTimerActive,
     puzzleIsComplete,
     failedPuzzle,
+    setPuzzlePrompt,
+    setPuzzleImageUrl,
+    setLoadingPrompt,
+    setLoadingImage,
     setGameStarted,
     initializeGame,
     handleNextPuzzle,

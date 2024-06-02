@@ -1,6 +1,7 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import MultiplayerTileSelector from "@/components/game/multiplayer-tile-selector";
+import { useChannel } from "ably/react";
 import PuzzleTimer from "@/components/game/puzzle-timer";
 import MovesDisplay from "@/components/game/moves-display";
 import ScoreDisplay from "@/components/game/score-display";
@@ -13,6 +14,7 @@ import AppBar from "@/components/layout/AppBar";
 import { useGameLogic } from "@/hooks/useGameLogic";
 import { useRoomsLogic } from "@/hooks/useRoomsLogic";
 import { useMultiplayer } from "@/hooks/useMultiplayer";
+import { useEffect } from "react";
 
 export default function Multiplayer({ roomId }: { roomId: string }) {
   const {
@@ -30,6 +32,10 @@ export default function Multiplayer({ roomId }: { roomId: string }) {
     isTimerActive,
     puzzleIsComplete,
     failedPuzzle,
+    setPuzzlePrompt,
+    setPuzzleImageUrl,
+    setLoadingPrompt,
+    setLoadingImage,
     initializeGame,
     setGameStarted,
     handleNextPuzzle,
@@ -43,7 +49,35 @@ export default function Multiplayer({ roomId }: { roomId: string }) {
   const { state, handleJoin, leaveRoom, remoteCursorPosition, peerIds } =
     useRoomsLogic(roomId);
 
-  const { startGame, nextPuzzle } = useMultiplayer(roomId);
+  const { channel } = useChannel(roomId!, (message) => {
+    if (message.name === "game-start") {
+      setGameStarted(true);
+    }
+    if (message.name === "game-update") {
+      const data = message.data;
+      setPuzzlePrompt(data.puzzlePrompt);
+      setPuzzleImageUrl(data.puzzleImageUrl);
+      setLoadingPrompt(false);
+      setLoadingImage(false);
+    }
+  });
+  const startGame = () => {
+    initializeGame();
+    console.log("game starting in sockets");
+    channel.publish({ name: "game-start", data: {} });
+  };
+
+  useEffect(() => {
+    if (gameStarted) {
+      channel.publish({
+        name: "game-update",
+        data: {
+          puzzlePrompt,
+          puzzleImageUrl,
+        },
+      });
+    }
+  }, [puzzlePrompt, puzzleImageUrl, gameStarted]);
 
   return (
     <>
@@ -62,7 +96,7 @@ export default function Multiplayer({ roomId }: { roomId: string }) {
                 mode="multiplayer"
               />
             )}
-            <p> game started {gameStarted ? "true" : "false"} </p>
+
             {gameStarted && (
               <>
                 <div className="grid grid-cols-12 gap-2">
@@ -76,7 +110,7 @@ export default function Multiplayer({ roomId }: { roomId: string }) {
                 </div>
                 <div className="grid grid-cols-12 gap-2">
                   <div className="col-span-10 p-2">
-                    {imagesData.length === 0 || loadingImage ? (
+                    {loadingImage ? (
                       <LoadingPuzzleDisplay gameScore={score} />
                     ) : (
                       <MultiplayerTileSelector
@@ -92,7 +126,7 @@ export default function Multiplayer({ roomId }: { roomId: string }) {
                         setScore={setScore}
                         puzzleIsComplete={puzzleIsComplete}
                         setPuzzleIsComplete={setPuzzleIsComplete}
-                        handleNextPuzzle={nextPuzzle}
+                        handleNextPuzzle={handleNextPuzzle}
                         failedPuzzle={failedPuzzle}
                         mode="multiplayer"
                       />

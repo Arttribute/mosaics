@@ -54,6 +54,7 @@ const MultiplayerTileSelector: React.FC<Props> = ({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [pieces, setPieces] = useState<{ id: number; img: string }[]>([]);
   const [shuffledPositions, setShuffledPositions] = useState<number[]>([]);
+  const [puzzleReady, setPuzzleReady] = useState(false);
   const numRows = numCols;
   const router = useRouter();
   const supabase = createClient();
@@ -146,13 +147,7 @@ const MultiplayerTileSelector: React.FC<Props> = ({
 
   const { channel } = useChannel(channelName!, (message) => {
     if (message.name === "puzzle-update") {
-      setShuffledPositions(message.data.positions);
-      setMovesTaken(message.data.movesTaken);
-      setScore(message.data.score);
-      setPuzzleIsComplete(message.data.puzzleIsComplete);
-      if (message.data.puzzleIsComplete) {
-        updateScore(message.data.movesTaken, message.data.score);
-      }
+      setShuffledPositions(message.data);
     }
   });
 
@@ -163,6 +158,7 @@ const MultiplayerTileSelector: React.FC<Props> = ({
   }, [puzzleIsComplete]);
 
   useEffect(() => {
+    setPuzzleReady(false);
     const fetchImage = async (url: string) => {
       const response = await fetch(url);
       const blob = await response.blob();
@@ -226,7 +222,7 @@ const MultiplayerTileSelector: React.FC<Props> = ({
         URL.revokeObjectURL(dataUrl);
       };
     });
-
+    setPuzzleReady(true);
     console.log("puzzle pieces", pieces);
   }, [src]);
 
@@ -250,17 +246,20 @@ const MultiplayerTileSelector: React.FC<Props> = ({
       setMovesTaken((prev: number) => prev + 1);
       checkCompletion(newPositions);
 
+      setShuffledPositions(newPositions);
+      setMovesTaken((prev: number) => prev + 1);
       channel.publish({
         name: "puzzle-update",
-        data: {
-          positions: newPositions,
-          movesTaken: movesTaken + 1,
-          score,
-          puzzleIsComplete,
-        },
+        data: newPositions,
       });
     }
   };
+
+  useEffect(() => {
+    if (puzzleReady) {
+      checkCompletion(shuffledPositions);
+    }
+  }, [shuffledPositions]);
 
   const handleDragOver = (event: React.DragEvent) => {
     event.preventDefault();
@@ -276,26 +275,16 @@ const MultiplayerTileSelector: React.FC<Props> = ({
     setPuzzleIsComplete(true);
   };
 
-  const updateScore = (movesTaken?: number, score?: number) => {
+  const updateScore = () => {
     const baseScore = 100;
     const timePenalty = 0.1;
     const movesPenalty = 1;
     const timeLeft = secondsLeft;
     if (puzzleIsComplete) {
-      const totalMovesPenalty = movesPenalty * (movesTaken || 0);
+      const totalMovesPenalty = movesPenalty * movesTaken;
       const totalTimePenalty = Math.round(timePenalty * (givenTime - timeLeft));
       const promptleScore = baseScore - totalMovesPenalty - totalTimePenalty;
-      setScore((score || 0) + promptleScore);
-
-      channel.publish({
-        name: "puzzle-update",
-        data: {
-          positions: shuffledPositions,
-          movesTaken,
-          score: (score || 0) + promptleScore,
-          puzzleIsComplete,
-        },
-      });
+      setScore(score + promptleScore);
     }
   };
 

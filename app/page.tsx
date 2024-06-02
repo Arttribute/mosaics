@@ -9,9 +9,7 @@ export default function Home() {
   return (
     <div>
       <AppBar />{" "}
-      <div className="absolute inset-0 -z-10 h-full w-full bg-white bg-[linear-gradient(to_right,#9080800a_1px,transparent_2px),linear-gradient(to_bottom,#8080800a_1px,transparent_2px)] bg-[size:18px_28px]">
-        <div className="absolute left-70 right-0 bottom-10 -z-10 m-auto h-[310px] w-[310px] rounded-full bg-gradient-to-r from-amber-500 to-purple-500 opacity-20 blur-[50px]"></div>
-      </div>
+      <div className="absolute inset-0 -z-10 h-full w-full bg-white bg-[linear-gradient(to_right,#9080800a_1px,transparent_2px),linear-gradient(to_bottom,#8080800a_1px,transparent_2px)] bg-[size:18px_28px]"></div>
       <div className=" my-20 mx-6 shadow-pink-800 ">
         <div className="flex flex-col items-center justify-center w-full ">
           <main className="flex flex-col items-center justify-center py-20 ">
