@@ -26,6 +26,12 @@ export const useGameLogic = () => {
   }, [movesTaken]);
 
   useEffect(() => {
+    if (puzzleIsComplete) {
+      setIsTimerActive(false);
+    }
+  }, [puzzleIsComplete]);
+
+  useEffect(() => {
     if (secondsLeft === 0 || remainingMoves === 0) {
       setFailedPuzzle(true);
       setIsTimerActive(false);
@@ -195,6 +201,7 @@ export const useGameLogic = () => {
     isTimerActive,
     puzzleIsComplete,
     failedPuzzle,
+    setGameStarted,
     initializeGame,
     handleNextPuzzle,
     setMovesTaken,
