@@ -35,7 +35,7 @@ Mosaics is built using a combination of technologies and frameworks to deliver a
 
 ## Deep Dive into the Game Mechanics
 
-#### Puzzle Generation
+### Puzzle Generation
 
 Puzzle generation in Mosaics involves creating unique, AI-driven challenges tailored to the player's performance. The process is dynamic and adapts based on player performance, ensuring a consistently engaging experience.
 
@@ -77,7 +77,7 @@ Puzzle generation in Mosaics involves creating unique, AI-driven challenges tail
                 Performance Feedback
 ```
 
-#### Game Scoring
+### Game Scoring
 
 Scoring in Mosaics is designed to reward efficiency and skill. Players earn points based on their performance in solving the puzzles, with deductions for taking too long or using too many moves.
 
@@ -89,7 +89,7 @@ Scoring in Mosaics is designed to reward efficiency and skill. Players earn poin
 
 **Completion Bonus:** Completing the puzzle within the given constraints awards a bonus to the player's score.
 
-#### Staking and NFT Rewards
+### Staking and NFT Rewards
 
 In the Play to Earn mode, players can stake tokens to participate in puzzle challenges. This mode introduces a risk-reward element where players earn rewards based on their puzzle-solving performance.
 
