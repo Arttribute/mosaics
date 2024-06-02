@@ -1,6 +1,6 @@
 # Mosaics
 
-Mosaics is an on onchain multiplayer puzzle game powered by AI. Piece together tile puzzles from AI prompts, stake assets, earn NFTs, and collaboratively solve puzzles in multiplayer challenges for a top spot on the leaderboard!
+Mosaics is an on-chain multiplayer puzzle game powered by AI. Piece together tile puzzles from AI prompts, stake assets, earn NFTs, and collaboratively solve puzzles in multiplayer challenges for a top spot on the leaderboard!
 
 ## Project Description
 
