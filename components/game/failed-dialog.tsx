@@ -22,13 +22,13 @@ export default function FailedDialog({
 }) {
   return (
     <Dialog open={open}>
-      <DialogContent>
+      <DialogContent className="w-96">
         <div className="w-full">
           <div className="p-2 flex flex-col items-center justify-center">
             <Image
               src={solution}
-              width={500}
-              height={500}
+              width={400}
+              height={400}
               alt={"game"}
               className="aspect-square rounded-md m-1"
             />
@@ -38,7 +38,7 @@ export default function FailedDialog({
               </p>
             )}
             {movesRemaining === 0 && (
-              <p className="text-lg font-semibold  m-2 text-red-500">
+              <p className="text-lg font-semibold m-2 text-red-500">
                 No moves left!
               </p>
             )}

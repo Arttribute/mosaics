@@ -1,10 +1,13 @@
 "use client";
-
 import { useEffect, useRef, useState } from "react";
 import { useChannel } from "ably/react";
 import SuccessDialog from "./success-dialog";
 import FailedDialog from "./failed-dialog";
 import { useRouter } from "next/navigation";
+import { ethers } from "ethers";
+import Web3Modal from "web3modal";
+import { MosaicsNFTRewardABI } from "@/lib/abi/MosaicsNFTRewardABI";
+import { playToEarnABI } from "@/lib/abi/PlayToEarnABI";
 
 interface Props {
   src: string;
@@ -14,13 +17,17 @@ interface Props {
   secondsLeft: number;
   givenTime: number;
   movesTaken: number;
-  channelName: string;
+  channelName?: string;
   setMovesTaken: any;
   setScore: any;
+  stakeAmount?: string;
+  multiplier?: number;
+  setMultiplier?: any;
   puzzleIsComplete: boolean;
   setPuzzleIsComplete: any;
   handleNextPuzzle: () => void;
   failedPuzzle: boolean;
+  mode: "single" | "multiplayer" | "earn";
 }
 
 const TileSelector: React.FC<Props> = ({
@@ -34,30 +41,78 @@ const TileSelector: React.FC<Props> = ({
   setMovesTaken,
   givenTime,
   setScore,
+  stakeAmount,
+  multiplier,
+  setMultiplier,
   puzzleIsComplete,
   setPuzzleIsComplete,
   handleNextPuzzle,
   failedPuzzle,
+  mode,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [pieces, setPieces] = useState<{ id: number; img: string }[]>([]);
   const [shuffledPositions, setShuffledPositions] = useState<number[]>([]);
-
   const numRows = numCols;
-
   const router = useRouter();
-  const leaveGame = () => {
-    //redirect to home page
-    router.push("/");
-    //publish score
-    //leave channel
+
+  const nextPuzzle = () => {
+    handleNextPuzzle();
+    if (mode === "earn") {
+      setMultiplier((multiplier ?? 0) + 0.01);
+    }
   };
 
-  const { channel } = useChannel(channelName, (message) => {
-    if (message.name === "puzzle-update") {
-      setShuffledPositions(message.data);
+  const leaveGame = async () => {
+    const web3Modal = new Web3Modal();
+    const connection = await web3Modal.connect();
+    const provider = new ethers.BrowserProvider(connection);
+    const signer = await provider.getSigner();
+    const address = await signer.getAddress();
+    const mosaicsNFTRewardContractAddress =
+      process.env.NEXT_PUBLIC_MOSAICS_NFT_REWARD_CONTRACT_ADDRESS!;
+
+    const playToEarnContractAddess =
+      process.env.NEXT_PUBLIC_PLAY_TO_EARN_CONTRACT_ADDRESS!;
+
+    const playToEarnContract = new ethers.Contract(
+      playToEarnContractAddess,
+      playToEarnABI,
+      signer
+    );
+
+    const mosaicsNFTRewardContract = new ethers.Contract(
+      mosaicsNFTRewardContractAddress,
+      MosaicsNFTRewardABI,
+      signer
+    );
+
+    if (mode === "earn" && multiplier) {
+      await playToEarnContract.completeGame(!failedPuzzle, multiplier * 100);
     }
-  });
+
+    if (!failedPuzzle) {
+      const tokenUri = "https://mosaicsnft.com/api/metadata/1";
+      await mosaicsNFTRewardContract.mint(address, tokenUri);
+    }
+
+    router.push("/");
+  };
+
+  let channel: any;
+  if (mode === "multiplayer" && channelName) {
+    ({ channel } = useChannel(channelName, (message) => {
+      if (message.name === "puzzle-update") {
+        setShuffledPositions(message.data.positions);
+        setMovesTaken(message.data.movesTaken);
+        setScore(message.data.score);
+        setPuzzleIsComplete(message.data.puzzleIsComplete);
+        if (message.data.puzzleIsComplete) {
+          updateScore(message.data.movesTaken, message.data.score);
+        }
+      }
+    }));
+  }
 
   useEffect(() => {
     if (puzzleIsComplete) {
@@ -87,7 +142,6 @@ const TileSelector: React.FC<Props> = ({
         canvas.height = image.height;
         ctx.drawImage(image, 0, 0);
 
-        // Calculate the size of each piece
         const pieceWidth = Math.floor(image.width / numCols);
         const pieceHeight = Math.floor(image.height / numRows);
 
@@ -127,7 +181,6 @@ const TileSelector: React.FC<Props> = ({
         }
         setShuffledPositions(tempPositions);
 
-        // Revoke the object URL after use
         URL.revokeObjectURL(dataUrl);
       };
     });
@@ -153,11 +206,18 @@ const TileSelector: React.FC<Props> = ({
       ];
       setShuffledPositions(newPositions);
       setMovesTaken((prev: number) => prev + 1);
-      channel.publish({
-        name: "puzzle-update",
-        data: newPositions,
-      });
       checkCompletion(newPositions);
+      if (mode === "multiplayer" && channel) {
+        channel.publish({
+          name: "puzzle-update",
+          data: {
+            positions: newPositions,
+            movesTaken: movesTaken + 1,
+            score,
+            puzzleIsComplete,
+          },
+        });
+      }
     }
   };
 
@@ -175,16 +235,27 @@ const TileSelector: React.FC<Props> = ({
     setPuzzleIsComplete(true);
   };
 
-  const updateScore = () => {
+  const updateScore = (movesTaken?: number, score?: number) => {
     const baseScore = 100;
     const timePenalty = 0.1;
     const movesPenalty = 1;
     const timeLeft = secondsLeft;
     if (puzzleIsComplete) {
-      const totalMovesPenalty = movesPenalty * movesTaken;
+      const totalMovesPenalty = movesPenalty * (movesTaken || 0);
       const totalTimePenalty = Math.round(timePenalty * (givenTime - timeLeft));
       const promptleScore = baseScore - totalMovesPenalty - totalTimePenalty;
-      setScore(score + promptleScore);
+      setScore((score || 0) + promptleScore);
+      if (mode === "multiplayer" && channel) {
+        channel.publish({
+          name: "puzzle-update",
+          data: {
+            positions: shuffledPositions,
+            movesTaken,
+            score: (score || 0) + promptleScore,
+            puzzleIsComplete,
+          },
+        });
+      }
     }
   };
 
@@ -210,9 +281,12 @@ const TileSelector: React.FC<Props> = ({
       <SuccessDialog
         open={puzzleIsComplete}
         solution={src}
-        onContinue={handleNextPuzzle}
+        onContinue={nextPuzzle}
+        onLeaveGame={leaveGame}
+        mode={mode}
+        stakeAmount={stakeAmount}
+        multiplier={multiplier}
       />
-
       <FailedDialog
         open={failedPuzzle}
         solution={src}
