@@ -1,12 +1,15 @@
 import { API } from "@huddle01/server-sdk/api";
+import { v4 as uuidv4 } from "uuid";
 
 const getRoomId = async () => {
   const api = new API({
     apiKey: process.env.HUDDLE_API_KEY!,
   });
 
+  const rooomTitle = `room-${uuidv4()}`;
+
   const createNewRoom = await api.createRoom({
-    title: "Huddle01 Room 3",
+    title: rooomTitle,
   });
 
   const roomId = createNewRoom?.data;
