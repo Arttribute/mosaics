@@ -144,21 +144,25 @@ export const useGameLogic = () => {
   };
 
   const generatePuzzleImage = async (imagePrompt: string) => {
-    const textToImageObject = {
-      text: imagePrompt,
-      negative_prompt: "",
-      super_resolution: true,
-      face_correct: true,
-      num_images: 1,
-      callback: 0,
-    };
-    const res = await axios.post("/api/generation", {
-      textToImageObject,
-      modelId: "690204",
-    });
-    const generationData = await res.data;
-    const generationId = generationData.id.toString();
-    setGenerationId(generationId);
+    try {
+      const textToImageObject = {
+        text: imagePrompt,
+        negative_prompt: "",
+        super_resolution: true,
+        face_correct: true,
+        num_images: 1,
+        callback: 0,
+      };
+      const res = await axios.post("/api/generation", {
+        textToImageObject,
+        modelId: "690204",
+      });
+      const generationData = await res.data;
+      const generationId = generationData.id.toString();
+      setGenerationId(generationId);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const getPuzzleImage = async (generationId: string, modelId: string) => {
