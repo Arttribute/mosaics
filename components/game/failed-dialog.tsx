@@ -4,6 +4,7 @@ import Image from "next/image";
 
 import { Button } from "@/components/ui/button";
 import { ChevronRight } from "lucide-react";
+import { Loader2 } from "lucide-react";
 
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 
@@ -20,6 +21,14 @@ export default function FailedDialog({
   movesRemaining: number;
   onLeaveGame: () => void;
 }) {
+  const [loadingLeave, setLoadingLeave] = React.useState(false);
+
+  const handleLeavegame = async () => {
+    setLoadingLeave(true);
+    await onLeaveGame();
+    setLoadingLeave(false);
+  };
+
   return (
     <Dialog open={open}>
       <DialogContent className="w-96">
@@ -49,10 +58,11 @@ export default function FailedDialog({
             <Button
               variant="outline"
               className="rounded-lg mt-1"
-              onClick={onLeaveGame}
+              onClick={handleLeavegame}
             >
               Exit Game
               <ChevronRight size={20} className="ml-0.5 w-4 h-4" />
+              {loadingLeave && <Loader2 size={20} className="animate-spin" />}
             </Button>
           </div>
         </div>
