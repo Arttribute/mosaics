@@ -32,3 +32,25 @@ Mosaics is built using a combination of technologies and frameworks to deliver a
 
 **MosaicNFTReward Address:** 0xbA9061540Bb7f9fEF0550430A8D86F11ad9f1dF6
 **PlayToEarn Address:** 0x3D7c9d3CF4502acD2951EBD185fC7124C1465226
+
+## Try out the deplyed Version
+
+You can try out the Mosaics live demo at [mosaics.arttribute.io](https://mosaics.arttribute.io)
+
+## Running it locally
+
+- First, install the required packages
+
+```bash
+npm install
+```
+
+- Have the env variables as shown in the `env.ecample` in your `.env.local` file
+
+- Then run `npm run dev` in your terminal to start the Next js app
+
+```bash
+npm run dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
