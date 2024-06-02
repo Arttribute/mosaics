@@ -8,6 +8,7 @@ import { ethers } from "ethers";
 import Web3Modal from "web3modal";
 import { MosaicsNFTRewardABI } from "@/lib/abi/MosaicsNFTRewardABI";
 import { playToEarnABI } from "@/lib/abi/PlayToEarnABI";
+import { createClient } from "@/utils/supabase/client"; // Import Supabase client
 
 interface Props {
   src: string;
@@ -55,6 +56,7 @@ const MultiplayerTileSelector: React.FC<Props> = ({
   const [shuffledPositions, setShuffledPositions] = useState<number[]>([]);
   const numRows = numCols;
   const router = useRouter();
+  const supabase = createClient();
 
   const nextPuzzle = () => {
     handleNextPuzzle();
@@ -96,7 +98,50 @@ const MultiplayerTileSelector: React.FC<Props> = ({
       await mosaicsNFTRewardContract.mint(address, tokenUri);
     }
 
-    router.push("/");
+    // Check if the user already has an entry in the leaderboard
+    const { data, error } = await supabase
+      .from("single_player_leaderboard")
+      .select("*")
+      .eq("eth_address", address)
+      .single();
+
+    if (error && error.code !== "PGRST116") {
+      console.error("Error checking existing entry:", error);
+      return;
+    }
+
+    if (data) {
+      // Update the existing entry
+      await supabase
+        .from("single_player_leaderboard")
+        .update({
+          score,
+          time_taken: givenTime - secondsLeft,
+          no_of_moves: movesTaken,
+          multiplier,
+          stake_amount: stakeAmount,
+          puzzle_is_complete: puzzleIsComplete,
+          failed_puzzle: failedPuzzle,
+        })
+        .eq("eth_address", address);
+    } else {
+      // Insert a new entry
+      await supabase.from("single_player_leaderboard").insert([
+        {
+          eth_address: address,
+          score,
+          time_taken: givenTime - secondsLeft,
+          no_of_moves: movesTaken,
+          multiplier,
+          stake_amount: stakeAmount,
+          puzzle_is_complete: puzzleIsComplete,
+          failed_puzzle: failedPuzzle,
+        },
+      ]);
+    }
+
+    // Navigate to the new leaderboard route with the user's Ethereum address
+    router.push(`/leaderboard?eth_address=${address}`);
   };
 
   const { channel } = useChannel(channelName!, (message) => {

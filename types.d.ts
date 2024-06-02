@@ -29,6 +29,10 @@ interface LeaderboardScore {
 }
 
 interface Score {
+  failed_puzzle: any;
+  puzzle_is_complete: any;
+  stake_amount: string;
+  multiplier: string;
   id: number;
   created_at: string;
   level: number;
@@ -36,10 +40,9 @@ interface Score {
   time_taken: number;
   no_of_moves: number;
   eth_address: string;
-  esn_username: string;
+  ens_username: string;
   picture: string;
 }
-
 
 interface Participant {
   displayName: string;
