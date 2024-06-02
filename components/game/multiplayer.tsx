@@ -1,6 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import TileSelector from "@/components/game/tile-selector";
+import MultiplayerTileSelector from "@/components/game/multiplayer-tile-selector";
 import PuzzleTimer from "@/components/game/puzzle-timer";
 import MovesDisplay from "@/components/game/moves-display";
 import ScoreDisplay from "@/components/game/score-display";
@@ -79,7 +79,7 @@ export default function Multiplayer({ roomId }: { roomId: string }) {
                     {imagesData.length === 0 || loadingImage ? (
                       <LoadingPuzzleDisplay gameScore={score} />
                     ) : (
-                      <TileSelector
+                      <MultiplayerTileSelector
                         src={puzzleImageUrl}
                         numCols={3}
                         secondsLeft={secondsLeft}
