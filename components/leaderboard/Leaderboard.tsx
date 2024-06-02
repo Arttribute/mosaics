@@ -14,7 +14,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-const SinglePlayerLeaderboard: React.FC = () => {
+const Leaderboard: React.FC = () => {
   const supabase = createClient();
   const [scores, setScores] = useState<Score[]>([]);
   const [sortOption, setSortOption] = useState<string>("score");
@@ -182,4 +182,4 @@ const SinglePlayerLeaderboard: React.FC = () => {
   );
 };
 
-export default SinglePlayerLeaderboard;
+export default Leaderboard;
