@@ -44,33 +44,35 @@ Puzzle generation in Mosaics involves creating unique, AI-driven challenges tail
 **3. Tile Splitting:** The generated image is split into smaller, shuffled tiles that the player must rearrange to form the original image.
 **4. Next Puzzle Generation:** Based on the player's final score, game agent generates the next puzzle's prompt, difficulty, number of moves, and time given.
 
-+--------------------+ +-------------------------+
-| | | |
-| Galadriel +------------> Astria’s Stability |
-| | Prompt | Diffusion API |
-| (Game Agent) | | (Generate Image) |
-| | | |
-+--------------------+ +----------+--------------+
-^ |
-| | Image
-| v
-| +--------------------------+
-| | |
-| | Image Split into Tiles |
-| | |
-| +-----------+--------------+
-| |
-| | Shuffled Tiles
-| v
-| +--------------------------+
-| | |
-| | Player Solves Puzzle |
-| | |
-| +--------------------------+
-| |
-| |
-+\_ \_ \_ \_ \_ \_ \_ \_ \_ \_ \_ \_ \_ \_ \_ \_+
-Performance Feedback
+```bash
+   +--------------------+            +-------------------------+
+   |                    |            |                         |
+   |    Galadriel       +------------> Astria’s Stability      |
+   |                    |  Prompt    |   Diffusion API         |
+   |   (Game Agent)     |            |  (Generate Image)       |
+   |                    |            |                         |
+   +--------------------+            +----------+--------------+
+            ^                                   |
+            |                                   | Image
+            |                                   v
+            |                  +--------------------------+
+            |                  |                          |
+            |                  | Image Split into Tiles   |
+            |                  |                          |
+            |                  +-----------+--------------+
+            |                               |
+            |                               | Shuffled Tiles
+            |                               v
+            |                  +--------------------------+
+            |                  |                          |
+            |                  | Player Solves Puzzle     |
+            |                  |                          |
+            |                  +--------------------------+
+            |                               |
+            |                               |
+            +_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _+
+                Performance Feedback
+```
 
 #### Game Scoring
 
