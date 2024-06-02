@@ -113,7 +113,7 @@ You can try out the Mosaics live demo at [mosaics.arttribute.io](https://mosaics
 npm install
 ```
 
-- Have the env variables as shown in the `env.ecample` in your `.env.local` file
+- Have the env variables as shown in the `env.example` in your `.env.local` file
 
 - Then run `npm run dev` in your terminal to start the Next js app
 
