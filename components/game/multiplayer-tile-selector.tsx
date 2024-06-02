@@ -30,7 +30,7 @@ interface Props {
   mode: "single" | "multiplayer" | "earn";
 }
 
-const TileSelector: React.FC<Props> = ({
+const MultiplayerTileSelector: React.FC<Props> = ({
   src,
   numCols,
   client,
@@ -99,7 +99,17 @@ const TileSelector: React.FC<Props> = ({
     router.push("/");
   };
 
-  let channel: any;
+  const { channel } = useChannel(channelName!, (message) => {
+    if (message.name === "puzzle-update") {
+      setShuffledPositions(message.data.positions);
+      setMovesTaken(message.data.movesTaken);
+      setScore(message.data.score);
+      setPuzzleIsComplete(message.data.puzzleIsComplete);
+      if (message.data.puzzleIsComplete) {
+        updateScore(message.data.movesTaken, message.data.score);
+      }
+    }
+  });
 
   useEffect(() => {
     if (puzzleIsComplete) {
@@ -194,6 +204,16 @@ const TileSelector: React.FC<Props> = ({
       setShuffledPositions(newPositions);
       setMovesTaken((prev: number) => prev + 1);
       checkCompletion(newPositions);
+
+      channel.publish({
+        name: "puzzle-update",
+        data: {
+          positions: newPositions,
+          movesTaken: movesTaken + 1,
+          score,
+          puzzleIsComplete,
+        },
+      });
     }
   };
 
@@ -221,6 +241,16 @@ const TileSelector: React.FC<Props> = ({
       const totalTimePenalty = Math.round(timePenalty * (givenTime - timeLeft));
       const promptleScore = baseScore - totalMovesPenalty - totalTimePenalty;
       setScore((score || 0) + promptleScore);
+
+      channel.publish({
+        name: "puzzle-update",
+        data: {
+          positions: shuffledPositions,
+          movesTaken,
+          score: (score || 0) + promptleScore,
+          puzzleIsComplete,
+        },
+      });
     }
   };
 
@@ -263,4 +293,4 @@ const TileSelector: React.FC<Props> = ({
   );
 };
 
-export default TileSelector;
+export default MultiplayerTileSelector;

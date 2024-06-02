@@ -18,5 +18,10 @@ module.exports = {
       accounts: [privateKey],
       gasPrice: 5189860000,
     },
+    calibration: {
+      chainId: 314159,
+      url: "https://api.calibration.node.glif.io/rpc/v1",
+      accounts: [privateKey],
+    },
   },
 };
