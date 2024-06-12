@@ -1,6 +1,8 @@
 import { MosaicsGameAgentABI } from "@/lib/abi/MosaicsGameAgentABI";
 import { Contract, ethers, Wallet } from "ethers";
 
+export const revalidate = 0;
+
 const privateKey = process.env.PRIVATE_KEY!;
 const galdrielRpcurl = process.env.GALADRIEL_RPC_URL!;
 const contractAddress = process.env.GAME_AGENT_CONTRACT_ADDRESS!;

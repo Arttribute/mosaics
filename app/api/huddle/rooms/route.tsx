@@ -1,6 +1,8 @@
 import { API } from "@huddle01/server-sdk/api";
 import { v4 as uuidv4 } from "uuid";
 
+export const revalidate = 0;
+
 const getRoomId = async () => {
   const api = new API({
     apiKey: process.env.HUDDLE_API_KEY!,
