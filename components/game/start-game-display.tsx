@@ -170,7 +170,7 @@ export default function StartGameDisplay({
             </Button>
           )}
           <div className="mt-4">
-            <Link href="/games">
+            <Link href="/">
               <Button
                 variant="ghost"
                 className="rounded-lg mt-1 text-xs font-light text-gray-500 w-52"
